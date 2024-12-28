@@ -3,27 +3,19 @@
 import { Request, Response } from 'express';
 import { userService } from './user.service';
 import sendResponse from '../../utils/sendResponse';
+import { StatusCodes } from 'http-status-codes';
+import catchAsync from '../../utils/catchAsync';
 
-const createUser = async (req: Request, res: Response) => {
-  try {
-    const payload = req.body;
+const createUser = catchAsync(async (req, res) => {
+  const payload = req.body;
+  const result = await userService.createUser(payload);
 
-    const result = await userService.createUser(payload);
-
-    // res.json({
-    //   status: true,
-    //   message: 'User created successfully',
-    //   data: result,
-    // })
-    sendResponse(res, { message: 'user cerate successfully', data: result });
-  } catch (error) {
-    res.json({
-      status: false,
-      message: 'Something went wrong',
-      error,
-    });
-  }
-};
+  sendResponse(res, {
+    statusCode: StatusCodes.CREATED,
+    message: 'user cerate successfully',
+    data: result,
+  });
+});
 
 const getUser = async (req: Request, res: Response) => {
   try {
